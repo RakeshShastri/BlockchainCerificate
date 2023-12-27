@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain Viewer</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Add qrcode-generator library -->
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    h1, h2 {
+      color: #343a40;
+    }
+
+    hr {
+      border-color: #ced4da;
+    }
+
+    .block-card {
+      margin-bottom: 20px;
+    }
+
+    .qr-code {
+      float: right;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center">Blockchain Viewer</h1>
+
+    <div id="blockchainContainer">
+      <!-- Blockchain blocks will be dynamically added here -->
+    </div>
+  </div>
+
+  <!-- Add Bootstrap JS and Popper.js scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    async function getBlockchain() {
+      const response = await fetch('http://localhost:3000/get-blockchain');
+      const result = await response.json();
+
+      if (result.length > 0) {
+        drawBlockchain(result);
+      } else {
+        alert('Blockchain is empty.');
+      }
+    }
+
+    function drawBlockchain(blocks) {
+      const blockchainContainer = document.getElementById('blockchainContainer');
+      blockchainContainer.innerHTML = '';
+
+      blocks.forEach((block, index) => {
+        // Create a Bootstrap card for each block
+        const card = document.createElement('div');
+        card.classList.add('card', 'block-card');
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+
+        // Display block index
+        const blockIndex = document.createElement('h5');
+        blockIndex.classList.add('card-title');
+        blockIndex.textContent = `Block ${index + 1}`;
+        cardBody.appendChild(blockIndex);
+
+        // Display student name
+        const studentName = document.createElement('p');
+        studentName.classList.add('card-text');
+        studentName.textContent = `Student: ${block.studentName}`;
+        cardBody.appendChild(studentName);
+
+        // Display course
+        const course = document.createElement('p');
+        course.classList.add('card-text');
+        course.textContent = `Course: ${block.course}`;
+        cardBody.appendChild(course);
+
+        // Display grade
+        const grade = document.createElement('p');
+        grade.classList.add('card-text');
+        grade.textContent = `Grade: ${block.grade}`;
+        cardBody.appendChild(grade);
+
+        // Display previous hash
+        const previousHash = document.createElement('p');
+        previousHash.classList.add('card-text');
+        previousHash.textContent = `Previous Hash: ${block.prevBlockHash}`;
+        cardBody.appendChild(previousHash);
+
+        // Generate QR code for current hash
+        const qrCodeContainer = document.createElement('div');
+        qrCodeContainer.classList.add('qr-code');
+        cardBody.appendChild(qrCodeContainer);
+
+        const qrCode = new QRCode(qrCodeContainer, {
+            text: block.hash,
+            width: 80,
+            height: 80,
+        });
+
+        // Display current hash
+        const currentHash = document.createElement('p');
+        currentHash.classList.add('card-text');
+        currentHash.textContent = `Current Hash: ${block.hash}`;
+        cardBody.appendChild(currentHash);
+
+        card.appendChild(cardBody);
+
+        // Append the card to the container
+        blockchainContainer.appendChild(card);
+      });
+    }
+
+    // Load blockchain on page load
+    getBlockchain();
+  </script>
+</body>
+</html>

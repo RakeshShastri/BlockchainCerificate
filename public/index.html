@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Management</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #343a40;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    h1, h2 {
+      color: #343a40;
+    }
+
+    hr {
+      border-color: #ced4da;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    button {
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center">Certificate Management</h1>
+
+    <div class="row">
+      <div class="col-md-6">
+        <form id="createCertificateForm">
+          <h2>Create Certificate</h2>
+          <div class="form-group">
+            <label for="studentName">Student Name:</label>
+            <input type="text" class="form-control" id="studentName" required>
+          </div>
+          <div class="form-group">
+            <label for="course">Course:</label>
+            <input type="text" class="form-control" id="course" required>
+          </div>
+          <div class="form-group">
+            <label for="grade">Grade:</label>
+            <input type="text" class="form-control" id="grade" required>
+          </div>
+          <button type="button" class="btn btn-success" onclick="createCertificate()">Create Certificate</button>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <form id="verifyCertificateForm">
+          <h2>Verify Certificate</h2>
+          <div class="form-group">
+            <label for="verifyCertificateHash">Certificate Hash:</label>
+            <input type="text" class="form-control" id="verifyCertificateHash" required>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="verifyCertificate()">Verify Certificate</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Bootstrap JS and Popper.js scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    async function createCertificate() {
+      const studentName = document.getElementById('studentName').value;
+      const course = document.getElementById('course').value;
+      const grade = document.getElementById('grade').value;
+
+      const response = await fetch('http://localhost:3000/create-certificate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentName, course, grade }),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    }
+
+    async function verifyCertificate() {
+      const certificateHash = document.getElementById('verifyCertificateHash').value;
+
+      const response = await fetch(`http://localhost:3000/verify-certificate?certificateHash=${certificateHash}`);
+      const result = await response.json();
+
+      alert(result.message);
+    }
+  </script>
+  <div class="container mt-3">
+    <button type="button" class="btn btn-primary" onclick="goToBlockchainPage()">View Blockchain</button>
+  </div>
+  
+  <script>
+    function goToBlockchainPage() {
+      // Navigate to blockchain.html
+      window.location.href = 'blockchain.html';
+    }
+  </script>
+</body>
+</html>

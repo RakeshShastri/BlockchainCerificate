@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockchain Certificate Webpage</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="text-center">Blockchain Certificate Webpage</h1>
+
+    <div class="row">
+      <!-- Your existing forms here -->
+    </div>
+
+    <hr>
+
+    <div id="blockchainInfo">
+      <h2 class="text-center">Blockchain Information</h2>
+      <button type="button" class="btn btn-info btn-block" onclick="getBlockchain()">Get Blockchain</button>
+      <canvas id="blockchainCanvas" class="mt-3"></canvas>
+    </div>
+  </div>
+
+  <!-- Add Bootstrap JS and Popper.js scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    async function getBlockchain() {
+      const response = await fetch('http://localhost:3000/get-blockchain');
+      const result = await response.json();
+
+      if (result.length > 0) {
+        drawBlockchain(result);
+      } else {
+        alert('Blockchain is empty.');
+      }
+    }
+
+    function drawBlockchain(blocks) {
+      const canvas = document.getElementById('blockchainCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const blockWidth = 100;
+      const blockHeight = 60;
+      const padding = 20;
+
+      blocks.forEach((block, index) => {
+        const x = index * (blockWidth + padding);
+        const y = 20;
+
+        // Draw block
+        ctx.fillStyle = '#28a745';
+        ctx.fillRect(x, y, blockWidth, blockHeight);
+
+        // Draw text
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Arial';
+        ctx.fillText(`Block ${index + 1}`, x + 10, y + 30);
+        ctx.fillText(`Hash: ${block.hash}`, x + 10, y + 50);
+      });
+
+      // Draw connectors
+      for (let i = 0; i < blocks.length - 1; i++) {
+        const startX = (i + 1) * (blockWidth + padding);
+        const endX = (i + 2) * (blockWidth + padding);
+
+        ctx.beginPath();
+        ctx.moveTo(startX, 50);
+        ctx.lineTo(endX, 50);
+        ctx.strokeStyle = '#28a745';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+  </script>
+</body>
+</html>
+    
+
+    
+    
+
+  <!-- Add Bootstrap JS and Popper.js scripts -->
+  <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    async function createCertificate() {
+      const studentName = document.getElementById('studentName').value;
+      const course = document.getElementById('course').value;
+      const grade = document.getElementById('grade').value;
+
+      const response = await fetch('http://localhost:3000/create-certificate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentName, course, grade }),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    }
+
+    async function verifyCertificate() {
+      const certificateHash = document.getElementById('verifyCertificateHash').value;
+
+      const response = await fetch(`http://localhost:3000/verify-certificate?certificateHash=${certificateHash}`);
+      const result = await response.json();
+
+      alert(result.message);
+    }
+
+    async function getBlockchain() {
+      const response = await fetch('http://localhost:3000/get-blockchain');
+      const result = await response.json();
+
+      if (result.length > 0) {
+        const blockchainDataElement = document.getElementById('blockchainData');
+        blockchainDataElement.innerHTML = result.map((block, index) => `<div class="block">${index + 1}</div>`).join('');
+      } else {
+        alert('Blockchain is empty.');
+      }
+    }
+  </script>
+</body>
+</html> -->

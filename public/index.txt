@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Blockchain Certificate Webpage</title>
+</head>
+<body>
+  <div class="container">
+  <h1>Blockchain Certificate Webpage</h1>
+
+  <form id="createCertificateForm">
+    <h2>Create Certificate</h2>
+    <label for="studentName">Student Name:</label>
+    <input type="text" id="studentName" required>
+    <br>
+    <label for="course">Course:</label>
+    <input type="text" id="course" required>
+    <br>
+    <label for="grade">Grade:</label>
+    <input type="text" id="grade" required>
+    <br>
+    <button type="button" onclick="createCertificate()">Create Certificate</button>
+  </form>
+
+  <hr>
+
+  <form id="verifyCertificateForm">
+    <h2>Verify Certificate</h2>
+    <label for="verifyCertificateHash">Certificate Hash:</label>
+    <input type="text" id="verifyCertificateHash" required>
+    <br>
+    <button type="button" onclick="verifyCertificate()">Verify Certificate</button>
+  </form>
+
+  <hr>
+
+  <form id="getCertificateInfoForm">
+    <h2>Get Certificate Info</h2>
+    <label for="getCertificateInfoHash">Certificate Hash:</label>
+    <input type="text" id="getCertificateInfoHash" required>
+    <br>
+    <button type="button" onclick="getCertificateInfo()">Get Certificate Info</button>
+    <pre id="certificateInfoData"></pre>
+  </form>
+
+
+  <div id="blockchainInfo">
+    <h2>Blockchain Information</h2>
+    <button type="button" class="btn btn-success" onclick="getBlockchain()">Get Blockchain</button>
+    <div id="blockchainData" class="connector"></div>
+  </div>
+
+  <script>
+    async function createCertificate() {
+      const studentName = document.getElementById('studentName').value;
+      const course = document.getElementById('course').value;
+      const grade = document.getElementById('grade').value;
+
+      const response = await fetch('http://localhost:3000/create-certificate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentName, course, grade }),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    }
+
+    async function verifyCertificate() {
+      const certificateHash = document.getElementById('verifyCertificateHash').value;
+
+      const response = await fetch(`http://localhost:3000/verify-certificate?certificateHash=${certificateHash}`);
+      const result = await response.json();
+      alert(result.message);
+    }
+
+    async function getCertificateInfo() {
+  const blockHash = document.getElementById('getCertificateInfoHash').value;
+
+  const response = await fetch(`http://localhost:3000/get-certificate-info?blockHash=${blockHash}`);
+  const result = await response.json();
+
+  const certificateInfoElement = document.getElementById('certificateInfoData');
+
+  if (result.success) {
+    const { studentName, course, grade } = result.certificateDetails;
+    const certificateInfoHTML = `
+      <div class="certificate-info-label">Name:</div>
+      <div class="certificate-info-value">${studentName}</div>
+      <div class="certificate-info-label">Course:</div>
+      <div class="certificate-info-value">${course}</div>
+      <div class="certificate-info-label">Grade:</div>
+      <div class="certificate-info-value">${grade}</div>
+    `;
+    certificateInfoElement.innerHTML = certificateInfoHTML;
+  } else {
+    certificateInfoElement.textContent = result.message;
+  }
+}
+
+
+
+async function getBlockchain() {
+        const response = await fetch('http://localhost:3000/get-blockchain');
+        const result = await response.json();
+
+        if (result.length > 0) {
+          const blockchainDataElement = document.getElementById('blockchainData');
+          blockchainDataElement.innerHTML = result.map((block, index) => `<div class="block">${index + 1}</div>`).join('');
+        } else {
+          alert('Blockchain is empty.');
+        }
+      }
+    </script>
+  </script>
+  
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
